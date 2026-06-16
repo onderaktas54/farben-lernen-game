@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Farben Lernen</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="game-panel" aria-labelledby="game-title">
+        <div class="topbar">
+          <div>
+            <p class="eyebrow">Deutsch Farben</p>
+            <h1 id="game-title">Farben lernen</h1>
+          </div>
+          <div class="score" aria-live="polite">
+            <span>Puan</span>
+            <strong id="score">0</strong>
+          </div>
+        </div>
+
+        <div class="task-row">
+          <p id="taskText">Male den Apfel rot.</p>
+          <button id="nextButton" class="ghost-button" type="button">Yeni gorev</button>
+        </div>
+
+        <div class="play-layout">
+          <section class="canvas-zone" aria-label="Boyama alani">
+            <div id="artStage" class="art-stage"></div>
+            <div id="dropHint" class="drop-hint">Rengi resmin uzerine birak</div>
+          </section>
+
+          <aside class="palette" aria-label="Renkler">
+            <button class="color-chip" type="button" draggable="true" data-color="red" aria-label="Kirmizi">
+              <span class="swatch red"></span>
+            </button>
+            <button class="color-chip" type="button" draggable="true" data-color="blue" aria-label="Mavi">
+              <span class="swatch blue"></span>
+            </button>
+            <button class="color-chip" type="button" draggable="true" data-color="yellow" aria-label="Sari">
+              <span class="swatch yellow"></span>
+            </button>
+            <button class="color-chip" type="button" draggable="true" data-color="green" aria-label="Yesil">
+              <span class="swatch green"></span>
+            </button>
+            <button class="color-chip" type="button" draggable="true" data-color="orange" aria-label="Turuncu">
+              <span class="swatch orange"></span>
+            </button>
+            <button class="color-chip" type="button" draggable="true" data-color="purple" aria-label="Mor">
+              <span class="swatch purple"></span>
+            </button>
+            <button class="color-chip" type="button" draggable="true" data-color="pink" aria-label="Pembe">
+              <span class="swatch pink"></span>
+            </button>
+            <button class="color-chip" type="button" draggable="true" data-color="brown" aria-label="Kahverengi">
+              <span class="swatch brown"></span>
+            </button>
+            <button class="color-chip" type="button" draggable="true" data-color="black" aria-label="Siyah">
+              <span class="swatch black"></span>
+            </button>
+            <button class="color-chip" type="button" draggable="true" data-color="white" aria-label="Beyaz">
+              <span class="swatch white"></span>
+            </button>
+          </aside>
+        </div>
+
+        <p id="feedback" class="feedback" aria-live="polite">Soruyu oku ve dogru rengi boya.</p>
+      </section>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Die Farben – Sunum & Oyunlar</title>
+<style>
+  :root{
+    --bg1:#fff7ed; --bg2:#fef3c7; --ink:#2b2b3a; --card:#ffffff;
+    --shadow:0 10px 30px rgba(0,0,0,.12); --radius:22px; --brand:#7c3aed;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Trebuchet MS','Comic Sans MS',Verdana,sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:var(--ink);min-height:100vh;padding:18px;
+    display:flex;flex-direction:column;align-items:center;
+  }
+  .screen{width:100%;max-width:1000px;display:none;animation:pop .35s ease}
+  .screen.active{display:block}
+  @keyframes pop{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+
+  h1{font-size:clamp(26px,5vw,44px);text-align:center;text-shadow:2px 2px 0 #fff;margin:6px 0}
+  h1 .sub{display:block;font-size:.42em;color:#6b7280;font-weight:normal;margin-top:4px}
+
+  .btn{
+    border:none;cursor:pointer;font-size:18px;font-weight:bold;padding:14px 28px;
+    border-radius:999px;background:var(--brand);color:#fff;box-shadow:var(--shadow);
+    transition:transform .15s;
+  }
+  .btn:hover{transform:translateY(-3px)}
+  .btn.ghost{background:#fff;color:var(--brand)}
+  .topnav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+
+  /* ---------- PRESENTATION (slide) ---------- */
+  .slide{
+    background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:26px;text-align:center;margin-top:10px;
+  }
+  .slide .bigcolor{
+    width:min(70%,340px);height:230px;border-radius:26px;margin:6px auto 18px;cursor:pointer;
+    box-shadow:inset 0 0 0 5px rgba(255,255,255,.45),var(--shadow);
+    display:flex;align-items:center;justify-content:center;font-size:60px;position:relative;
+    transition:transform .15s;
+  }
+  .slide .bigcolor:hover{transform:scale(1.02)}
+  .slide .bigcolor .spk{position:absolute;top:12px;right:16px;font-size:26px;opacity:.7}
+  .slide .de{font-size:clamp(34px,7vw,56px);font-weight:bold}
+  .slide .tr{font-size:22px;color:#6b7280;margin-top:2px}
+  .slide .say{font-size:16px;color:#9ca3af;margin-top:6px;font-style:italic}
+  .slidenav{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:20px}
+  .dots{display:flex;gap:7px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+  .dot{width:13px;height:13px;border-radius:50%;background:#e5e7eb;cursor:pointer;border:2px solid #fff}
+  .dot.on{transform:scale(1.3)}
+  .counter{font-weight:bold;color:#6b7280;min-width:60px}
+
+  /* ---------- MENU ---------- */
+  .menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:18px}
+  .gamecard{
+    background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:26px 20px;text-align:center;cursor:pointer;transition:transform .18s;
+    border:3px solid transparent;
+  }
+  .gamecard:hover{transform:translateY(-6px);border-color:var(--brand)}
+  .gamecard .emoji{font-size:54px}
+  .gamecard h3{font-size:22px;margin:10px 0 6px}
+  .gamecard p{color:#6b7280;font-size:15px}
+
+  /* ---------- GENERIC GAME (g1/g2) ---------- */
+  .game{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px;text-align:center}
+  .scorebar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+  .scorebar .pill{background:#f3f4f6;border-radius:999px;padding:8px 16px;font-weight:bold}
+  .prompt{font-size:20px;margin-bottom:18px;color:#374151}
+  .gColor{width:170px;height:170px;border-radius:26px;margin:0 auto 22px;box-shadow:inset 0 0 0 4px rgba(255,255,255,.5),var(--shadow)}
+  .gWord{font-size:clamp(36px,8vw,62px);font-weight:bold;margin:8px 0 24px}
+  .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px}
+  .opt{border:none;cursor:pointer;font-size:22px;font-weight:bold;padding:20px 10px;border-radius:18px;box-shadow:var(--shadow);transition:transform .12s;background:#fff;color:#374151}
+  .opt:hover{transform:translateY(-4px)}
+  .opt.colorbox{min-height:100px}
+  .opt.correct{outline:5px solid #22c55e;animation:shake .4s}
+  .opt.wrong{outline:5px solid #ef4444;opacity:.6}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+  .feedback{font-size:26px;font-weight:bold;min-height:36px;margin:18px 0 4px}
+  .finish{font-size:24px;line-height:1.6}
+  .stars{font-size:40px;margin:10px 0}
+
+  /* ---------- PAINT GAME iframe ---------- */
+  .paintFrame{width:100%;height:680px;border:none;border-radius:var(--radius);box-shadow:var(--shadow);background:#fff}
+
+  .footer{margin:24px 0 8px;color:#9ca3af;font-size:13px;text-align:center}
+  @media(max-width:600px){.paintFrame{height:760px}}
+</style>
+</head>
+<body>
+
+<!-- ===================== SCREEN: INTRO / PRESENTATION ===================== -->
+<section class="screen active" id="screen-intro">
+  <h1>Die Farben 🎨<span class="sub">Almanca Renkler · sunum</span></h1>
+  <div class="slide">
+    <div class="bigcolor" id="slColor"><span class="spk">🔊</span></div>
+    <div class="de" id="slDe">Rot</div>
+    <div class="tr" id="slTr">Kırmızı</div>
+    <div class="say" id="slSay">oku: "rot"</div>
+    <div class="slidenav">
+      <button class="btn ghost" id="prevBtn">◀ Geri</button>
+      <span class="counter" id="slCount">1 / 11</span>
+      <button class="btn" id="nextBtn">İleri ▶</button>
+    </div>
+    <div class="dots" id="dots"></div>
+  </div>
+  <div style="text-align:center;margin-top:22px">
+    <button class="btn" id="toMenuBtn" style="font-size:20px">✅ Renkleri öğrendik → Oyunlara geç!</button>
+  </div>
+  <p class="footer">Renge tıkla 👉 Almanca okunuşunu duy. Tahtaya yansıtarak tek tek anlat.</p>
+</section>
+
+<!-- ===================== SCREEN: GAME MENU ===================== -->
+<section class="screen" id="screen-menu">
+  <div class="topnav">
+    <button class="btn ghost" onclick="showScreen('intro')">◀ Sunuma dön</button>
+    <strong style="font-size:18px;color:#6b7280">Bir oyun seç 👇</strong>
+    <span></span>
+  </div>
+  <h1>Oyun Seç 🎮</h1>
+  <div class="menu">
+    <div class="gamecard" onclick="openGame('g1')">
+      <div class="emoji">🎯</div><h3>Renk → Kelime</h3>
+      <p>Rengi gör, doğru Almanca kelimeyi seç</p>
+    </div>
+    <div class="gamecard" onclick="openGame('g2')">
+      <div class="emoji">👆</div><h3>Kelime → Renk</h3>
+      <p>Almanca kelimeyi oku/dinle, doğru rengi tıkla</p>
+    </div>
+    <div class="gamecard" onclick="openGame('paint')">
+      <div class="emoji">🖌️</div><h3>Boyama – Farben malen</h3>
+      <p>Görevi oku, resmi doğru renge boya</p>
+    </div>
+  </div>
+  <p class="footer">3 öğrenci sırayla yarışabilir ⭐</p>
+</section>
+
+<!-- ===================== SCREEN: GAME 1 ===================== -->
+<section class="screen" id="screen-g1">
+  <div class="topnav"><button class="btn ghost" onclick="showScreen('menu')">◀ Menü</button>
+    <strong style="color:#6b7280">🎯 Renk → Kelime</strong><span></span></div>
+  <div class="game" id="g1wrap">
+    <div class="scorebar">
+      <span class="pill">⭐ Puan: <span id="g1score">0</span></span>
+      <span class="pill">Soru: <span id="g1count">1</span>/10</span>
+      <button class="btn ghost" onclick="startGame1()">🔄 Baştan</button>
+    </div>
+    <p class="prompt">Bu renk Almanca nasıl yazılır?</p>
+    <div class="gColor" id="g1color"></div>
+    <div class="options" id="g1options"></div>
+    <div class="feedback" id="g1feedback"></div>
+  </div>
+</section>
+
+<!-- ===================== SCREEN: GAME 2 ===================== -->
+<section class="screen" id="screen-g2">
+  <div class="topnav"><button class="btn ghost" onclick="showScreen('menu')">◀ Menü</button>
+    <strong style="color:#6b7280">👆 Kelime → Renk</strong><span></span></div>
+  <div class="game" id="g2wrap">
+    <div class="scorebar">
+      <span class="pill">⭐ Puan: <span id="g2score">0</span></span>
+      <span class="pill">Soru: <span id="g2count">1</span>/10</span>
+      <button class="btn ghost" onclick="startGame2()">🔄 Baştan</button>
+    </div>
+    <p class="prompt">🔊 Doğru rengi tıkla:</p>
+    <div class="gWord" id="g2word">—</div>
+    <div class="options" id="g2options"></div>
+    <div class="feedback" id="g2feedback"></div>
+  </div>
+</section>
+
+<!-- ===================== SCREEN: PAINT GAME ===================== -->
+<section class="screen" id="screen-paint">
+  <div class="topnav"><button class="btn ghost" onclick="showScreen('menu')">◀ Menü</button>
+    <strong style="color:#6b7280">🖌️ Boyama – Farben malen</strong><span></span></div>
+  <iframe class="paintFrame" id="paintFrame" title="Farben malen"></iframe>
+</section>
+
+<script>
+/* ---------- data ---------- */
+const COLORS = [
+  {de:"Rot",     tr:"Kırmızı", hex:"#e53935", light:false, say:"rot"},
+  {de:"Blau",    tr:"Mavi",    hex:"#1e88e5", light:false, say:"blau"},
+  {de:"Gelb",    tr:"Sarı",    hex:"#fdd835", light:true,  say:"gelb"},
+  {de:"Grün",    tr:"Yeşil",   hex:"#43a047", light:false, say:"grün"},
+  {de:"Orange",  tr:"Turuncu", hex:"#fb8c00", light:false, say:"oranj"},
+  {de:"Lila",    tr:"Mor",     hex:"#8e24aa", light:false, say:"liila"},
+  {de:"Rosa",    tr:"Pembe",   hex:"#ec407a", light:false, say:"roza"},
+  {de:"Braun",   tr:"Kahve",   hex:"#795548", light:false, say:"braun"},
+  {de:"Schwarz", tr:"Siyah",   hex:"#212121", light:false, say:"şvarts"},
+  {de:"Weiß",    tr:"Beyaz",   hex:"#fafafa", light:true,  say:"vays"},
+  {de:"Grau",    tr:"Gri",     hex:"#9e9e9e", light:false, say:"grau"},
+];
+
+function speak(text){
+  if(!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text); u.lang="de-DE"; u.rate=.85;
+  const v=speechSynthesis.getVoices().find(v=>v.lang.startsWith("de")); if(v)u.voice=v;
+  speechSynthesis.speak(u);
+}
+if("speechSynthesis" in window){speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();}
+
+/* ---------- screen router ---------- */
+function showScreen(name){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById("screen-"+name).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function openGame(which){
+  if(which==="g1"){ showScreen("g1"); startGame1(); }
+  else if(which==="g2"){ showScreen("g2"); startGame2(); }
+  else if(which==="paint"){
+    const f=document.getElementById("paintFrame");
+    if(!f.src) f.src="./boyama.html";   // senin orijinal boyama oyunun
+    showScreen("paint");
+  }
+}
+
+/* ---------- presentation slideshow ---------- */
+let sIdx=0;
+const slColor=document.getElementById("slColor");
+const dotsWrap=document.getElementById("dots");
+COLORS.forEach((c,i)=>{
+  const d=document.createElement("span"); d.className="dot"; d.style.background=c.hex;
+  d.onclick=()=>{sIdx=i;renderSlide();}; dotsWrap.appendChild(d);
+});
+function renderSlide(){
+  const c=COLORS[sIdx];
+  slColor.style.background=c.hex;
+  document.getElementById("slDe").textContent=c.de;
+  document.getElementById("slDe").style.color=c.light?"#2b2b3a":c.hex;
+  document.getElementById("slTr").textContent=c.tr;
+  document.getElementById("slSay").textContent='oku: "'+c.say+'"';
+  document.getElementById("slCount").textContent=(sIdx+1)+" / "+COLORS.length;
+  dotsWrap.querySelectorAll(".dot").forEach((d,i)=>d.classList.toggle("on",i===sIdx));
+  speak(c.de);
+}
+slColor.onclick=()=>speak(COLORS[sIdx].de);
+document.getElementById("nextBtn").onclick=()=>{sIdx=(sIdx+1)%COLORS.length;renderSlide();};
+document.getElementById("prevBtn").onclick=()=>{sIdx=(sIdx-1+COLORS.length)%COLORS.length;renderSlide();};
+document.getElementById("toMenuBtn").onclick=()=>showScreen("menu");
+renderSlide();
+
+/* ---------- helpers ---------- */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const TOTAL=10;
+const praise=["Super! 🌟","Toll! 🎉","Prima! 👏","Richtig! ✅","Bravo! 💪"];
+
+/* ================= GAME 1: color -> word ================= */
+let g1={i:0,score:0,order:[]};
+function startGame1(){
+  g1={i:0,score:0,order:shuffle(COLORS.map((_,i)=>i)).slice(0,TOTAL)};
+  document.getElementById("g1score").textContent=0; nextG1();
+}
+function nextG1(){
+  const fb=document.getElementById("g1feedback"); fb.textContent="";
+  if(g1.i>=TOTAL) return finishG1();
+  document.getElementById("g1count").textContent=g1.i+1;
+  const correct=COLORS[g1.order[g1.i]];
+  document.getElementById("g1color").style.background=correct.hex;
+  speak(correct.de);
+  const opts=shuffle([correct,...shuffle(COLORS.filter(c=>c.de!==correct.de)).slice(0,3)]);
+  const box=document.getElementById("g1options"); box.innerHTML="";
+  opts.forEach(o=>{const b=document.createElement("button");b.className="opt";b.textContent=o.de;
+    b.onclick=()=>chooseG1(b,o,correct);box.appendChild(b);});
+}
+function chooseG1(btn,chosen,correct){
+  const fb=document.getElementById("g1feedback");
+  document.querySelectorAll("#g1options .opt").forEach(b=>b.disabled=true);
+  if(chosen.de===correct.de){btn.classList.add("correct");g1.score++;
+    document.getElementById("g1score").textContent=g1.score;
+    fb.style.color="#16a34a";fb.textContent=praise[Math.floor(Math.random()*praise.length)];}
+  else{btn.classList.add("wrong");
+    document.querySelectorAll("#g1options .opt").forEach(b=>{if(b.textContent===correct.de)b.classList.add("correct");});
+    fb.style.color="#dc2626";fb.textContent="Doğrusu: "+correct.de;speak(correct.de);}
+  g1.i++; setTimeout(nextG1,1300);
+}
+function finishG1(){
+  const stars=Math.round(g1.score/TOTAL*3);
+  document.getElementById("g1wrap").innerHTML=
+    `<div class="finish"><div class="stars">${"⭐".repeat(stars||1)}</div>Geschafft! 🎉<br>
+     Puanın: <b>${g1.score}/${TOTAL}</b><br>
+     <button class="btn" style="margin-top:10px" onclick="rebuildG1()">🔄 Tekrar</button>
+     <button class="btn ghost" style="margin-top:10px" onclick="showScreen('menu')">◀ Menü</button></div>`;
+}
+function rebuildG1(){document.getElementById("g1wrap").innerHTML=G1HTML;startGame1();}
+
+/* ================= GAME 2: word -> color (boş renkli kutular) ================= */
+let g2={i:0,score:0,order:[]};
+function startGame2(){
+  g2={i:0,score:0,order:shuffle(COLORS.map((_,i)=>i)).slice(0,TOTAL)};
+  document.getElementById("g2score").textContent=0; nextG2();
+}
+function nextG2(){
+  const fb=document.getElementById("g2feedback"); fb.textContent="";
+  if(g2.i>=TOTAL) return finishG2();
+  document.getElementById("g2count").textContent=g2.i+1;
+  const correct=COLORS[g2.order[g2.i]];
+  document.getElementById("g2word").textContent=correct.de;
+  document.getElementById("g2word").style.color="#2b2b3a";
+  speak(correct.de);
+  const opts=shuffle([correct,...shuffle(COLORS.filter(c=>c.de!==correct.de)).slice(0,3)]);
+  const box=document.getElementById("g2options"); box.innerHTML="";
+  opts.forEach(o=>{const b=document.createElement("button");b.className="opt colorbox";
+    b.style.background=o.hex;b.dataset.de=o.de;b.setAttribute("aria-label",o.tr);
+    b.onclick=()=>chooseG2(b,o,correct);box.appendChild(b);});
+}
+function chooseG2(btn,chosen,correct){
+  const fb=document.getElementById("g2feedback");
+  document.querySelectorAll("#g2options .opt").forEach(b=>b.disabled=true);
+  if(chosen.de===correct.de){btn.classList.add("correct");g2.score++;
+    document.getElementById("g2score").textContent=g2.score;
+    fb.style.color="#16a34a";fb.textContent=praise[Math.floor(Math.random()*praise.length)];}
+  else{btn.classList.add("wrong");
+    document.querySelectorAll("#g2options .opt").forEach(b=>{if(b.dataset.de===correct.de)b.classList.add("correct");});
+    fb.style.color="#dc2626";fb.textContent="Doğrusu: "+correct.de+" ("+correct.tr+")";}
+  g2.i++; setTimeout(nextG2,1300);
+}
+function finishG2(){
+  const stars=Math.round(g2.score/TOTAL*3);
+  document.getElementById("g2wrap").innerHTML=
+    `<div class="finish"><div class="stars">${"⭐".repeat(stars||1)}</div>Geschafft! 🎉<br>
+     Puanın: <b>${g2.score}/${TOTAL}</b><br>
+     <button class="btn" style="margin-top:10px" onclick="rebuildG2()">🔄 Tekrar</button>
+     <button class="btn ghost" style="margin-top:10px" onclick="showScreen('menu')">◀ Menü</button></div>`;
+}
+function rebuildG2(){document.getElementById("g2wrap").innerHTML=G2HTML;startGame2();}
+
+/* save original game markup for rebuild */
+const G1HTML=document.getElementById("g1wrap").innerHTML;
+const G2HTML=document.getElementById("g2wrap").innerHTML;
+</script>
+</body>
+</html>
